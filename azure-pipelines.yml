@@ -15,6 +15,9 @@ variables:
   containerRegistry: 'acigrupoecodev.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
+  appName: 'pythontest-webapp-grupoeco-dev'
+  azureSubscription: 'Azure subscription 1'
+
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -37,3 +40,14 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+    ## Add the below snippet at the end of your pipeline
+    - task: AzureWebAppContainer@1
+      displayName: 'Azure Web App on Container Deploy'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appName: $(appName)
+        containers: $(containerRegistry)/$(imageRepository):$(tag)
+        deployToSlotOrASE: true
+        resourceGroupName: 'rgp-grupoeco-dev'
+        slotName: uat        
